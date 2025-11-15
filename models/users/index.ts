@@ -35,12 +35,24 @@ class User implements IUser{
     }
 
     // get
-    static async find(value : string) :Promise<User | null>{
-        const collection:any = await userCollection()
-        // for email
-        if (value.includes("@")){
-            const doc = await collection.findOne({value})
+    static async find(value : string) :Promise<User | null >{
+        const collection:any = await userCollection() 
         
+        const isEmail = value.includes("@")
+
+        console.log('isEmail', isEmail)
+
+        // verify
+        const isValidId = value === typeof ObjectId
+        console.log("isValidId", isValidId)
+
+        if ( !isEmail && !isValidId ){
+            throw new Error("Invalid imput")
+        }
+       
+        if (isEmail){
+            const doc = await collection.findOne({email:value})
+
             return doc ? new User({ _id:doc.id, ...doc}) : null
         } 
         // for id

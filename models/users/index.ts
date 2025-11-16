@@ -35,34 +35,30 @@ class User implements IUser{
     }
 
     // get
-    static async find(value : string) :Promise<User | null >{
-        const collection:any = await userCollection() 
+    static async findByEmail(value : string) :Promise<User | null >{
         
         const isEmail = value.includes("@")
-
         console.log('isEmail', isEmail)
 
-        // verify
-        const isValidId = value === typeof ObjectId
-        console.log("isValidId", isValidId)
+        if ( !isEmail ) throw new Error("Invalid email")
+        
+        const collection:any = await userCollection() 
 
-        if ( !isEmail && !isValidId ){
-            throw new Error("Invalid imput")
-        }
-       
-        if (isEmail){
-            const doc = await collection.findOne({email:value})
-
-            return doc ? new User({ _id:doc.id, ...doc}) : null
-        } 
-        // for id
-        const doc = await collection.findOne({ _id: new ObjectId(value)})
-
-        return doc ? new User({ _id:doc.id, ...doc}) : null
-       
+        const  doc = await collection.findOne({email:value}) 
+        return doc ? new User({_id : doc._id, ...doc }) : null
+        
     }
    
+    static async findById (id: string):Promise<User | null>{
 
+        const isValidId = ObjectId.isValid(id)        
+        if ( !isValidId ) throw new Error("Invalid id")
+        
+        const collection: any = await userCollection()
+        
+        const doc = await collection.findOne({ _id : new ObjectId(id)})
+        return doc ? new User({ _id : doc._id, ...doc}) : null
+    }
     // update
     static async update(id : string, data : Partial<IUser>): Promise<boolean>{
         const collection: any = await userCollection()

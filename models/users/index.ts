@@ -61,12 +61,17 @@ class User implements IUser{
     }
     // update
     static async update(id : string, data : Partial<IUser>): Promise<boolean>{
+        
+        const isValidId = ObjectId.isValid(id)
+        if ( !isValidId ) throw new Error("invalid id")
+
         const collection: any = await userCollection()
         data.updatedAt = new Date()
         const updateRecord = await collection.updateOne(
             { _id : new ObjectId(id) },
             { $set : data}   
         )
+       
         return updateRecord.modifiedCount > 0
     }
 

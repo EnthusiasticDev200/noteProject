@@ -37,9 +37,7 @@ export const registerUser = async( req:Request, res:Response )=>{
 //get user
 export const getAllUser = async( req: Request, res: Response )=>{
     try{
-        const collection :any = await userCollection()
-
-        const users = await collection.find().toArray() // makes cursor return all doc
+        const users = await User.findAll()    
 
         return res.status(200).json(users)
 
@@ -80,8 +78,8 @@ export const updateProfile = async ( req:Request, res:Response) =>{
             return res.status(404).json({ message : "id not provided"})
         }
         const { name, email } = req.body
-        const response = await User.update(id, req.body)
         
+        await User.update(id, req.body)
     
         return res.status(201).json({message : "update successful"})
     }catch(error: any){
@@ -123,10 +121,8 @@ export const loginUser = async ( req: Request, res : Response) =>{
     try{
         const { name, email } = req.body
 
-        console.log("reqBody" , req.body)
         const user = await User.findByEmail(email)
 
-        console.log("userLogin", user)
 
         if ( !user ){
             return res.status(404).json({ message: 'user not found' })
@@ -145,11 +141,9 @@ export const loginUser = async ( req: Request, res : Response) =>{
             email : user.email,
             role : user.role
         }
-        console.log('payload', payload)
+       
         //create jwt
         const userToken = accessToken(payload)
-
-        console.log("userToken", userToken)
 
         res.cookie('user_token', userToken, {
             httpOnly : true,

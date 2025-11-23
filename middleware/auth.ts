@@ -12,10 +12,7 @@ interface customJwtPayload extends JwtPayload{
 }
 
 const authenticateJWT = ( req : Request, res : Response, next : NextFunction) =>{
-    console.log("cookies", req.cookies)
     const token = req.cookies.user_token
-
-    console.log("tokenFROMauthMid", token)
 
     if ( !token ) return res.status(401).json({
         message : "Invalid or expired token"
@@ -28,7 +25,6 @@ const authenticateJWT = ( req : Request, res : Response, next : NextFunction) =>
             { algorithms : ['HS256']} 
         ) as customJwtPayload;
 
-        console.log('decoded', decoded)
         req.userld = decoded.userId
         req.name = decoded.name
         req.email = decoded.email
@@ -43,6 +39,15 @@ const authenticateJWT = ( req : Request, res : Response, next : NextFunction) =>
     }
 }
 
+const requireSuperUser = ( req: Request, res :Response, next : NextFunction )=>{
+    const role = req.role
+    if( role !== "admin"){
+        return res.status(403).json({
+            message : "Unauthorized! Super user only"
+        })
+    }
+    next()
+}
 
 
-export { authenticateJWT }
+export { authenticateJWT, requireSuperUser }

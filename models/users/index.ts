@@ -8,6 +8,7 @@ class User implements IUser{
     id? :  ObjectId
     name : string
     email : string
+    role : string
     createdAt? : Date
     updatedAt?: Date;
 
@@ -15,6 +16,7 @@ class User implements IUser{
         this.id = payload.id ?? new ObjectId()
         this.name = payload.name
         this.email = payload.email
+        this.role = payload.role
         this.createdAt = payload.createdAt ??new Date()
         this.updatedAt = payload.updatedAt ?? new Date()
     }
@@ -29,6 +31,7 @@ class User implements IUser{
             _id : user.id,
             name : user.name,
             email : user.email,
+            role : user.role,
             createdAt : user.createdAt
         })
         return createUSer

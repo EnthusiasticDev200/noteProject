@@ -168,3 +168,18 @@ export const loginUser = async ( req: Request, res : Response) =>{
         })
     }
 }
+
+export const logoutUser = ( req: Request, res : Response )=>{
+    try{
+        const name = req.name
+        res.clearCookie("user_token")
+        return res.status(200).json({
+             message : `Bye ${name}`})
+    }catch(error:any){
+        console.log('error loggin out', error)
+        return res.status(500).json({
+            message : "Error loggin user out",
+            error : error.mesaage
+        })
+    }
+} 

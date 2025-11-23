@@ -1,13 +1,23 @@
 import User from "../../models/users/index.js"
 import { Request, Response } from "express"
 import { userCollection } from "../config/database.js"
+import { accessToken } from "../../services/createToken.js"
 
 
+
+const envState = process.env.NODE_ENV!
+console.log('envState', envState)
 
 //create user
 export const registerUser = async( req:Request, res:Response )=>{
     try{
-        const { name, email } = req.body
+        const { name, email, role } = req.body
+
+        if ( !name || !email || !role ){
+            return res.status(400).json({
+                message : "field requires"
+            })
+        }
         const existingUser = await User.findByEmail(email)
 
         if( existingUser ) return res.status(409).json({message:"User already exist"})
@@ -103,6 +113,57 @@ export const deleteUser = async ( req:Request, res:Response )=>{
         console.log("Error deleting user", error)
         return res.status(500).json({
             message : "Error deleting user",
+            error : error.message
+        })
+    }
+}
+
+//login logic
+export const loginUser = async ( req: Request, res : Response) =>{
+    try{
+        const { name, email } = req.body
+
+        console.log("reqBody" , req.body)
+        const user = await User.findByEmail(email)
+
+        console.log("userLogin", user)
+
+        if ( !user ){
+            return res.status(404).json({ message: 'user not found' })
+        }
+
+        if (user.name !== name && user.email !== email){
+            return res.status(401).json({
+                message : "ops!!"
+            })
+        }
+
+        // create payload
+        const payload = {
+            userId : user.id,
+            name : user.name,
+            email : user.email,
+            role : user.role
+        }
+        console.log('payload', payload)
+        //create jwt
+        const userToken = accessToken(payload)
+
+        console.log("userToken", userToken)
+
+        res.cookie('user_token', userToken, {
+            httpOnly : true,
+            secure : envState === 'production',
+            sameSite: envState === 'production' ? 'none' : 'lax',
+            maxAge : 5 * 60 * 1000
+        })
+        return res.status(200).json({
+            message : `Welcome ${name}`
+        })
+    }catch(error: any){
+        console.log("User login failed", error)
+        return res.status(500).json({
+            message : "User login failed",
             error : error.message
         })
     }

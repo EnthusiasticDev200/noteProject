@@ -2,9 +2,10 @@ import express from "express";
 
 import { 
     deleteUser, getAllUser, getUser, loginUser, 
+    logoutUser, 
     registerUser, updateProfile 
 } from "../controllers/users.js";
-import { authenticateJWT } from "../../middleware/auth.js";
+import { authenticateJWT, requireSuperUser } from "../../middleware/auth.js";
 
 
 
@@ -16,12 +17,14 @@ router.post("/user/create", registerUser)
 
 router.post("/user/login", loginUser)
 
-router.get("/user/:id", getUser)
+router.post("/user/logout", authenticateJWT, logoutUser)
 
-router.get("/users/", getAllUser)
+router.get("/user/:id", authenticateJWT, getUser)
 
-router.put("/user/:id/update", updateProfile)
+router.get("/users/", authenticateJWT, requireSuperUser, getAllUser)
 
-router.delete("/user/:id", deleteUser)
+router.put("/user/:id/update", authenticateJWT, updateProfile)
+
+router.delete("/user/:id", authenticateJWT, deleteUser)
 
 export default router

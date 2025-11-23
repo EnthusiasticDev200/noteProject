@@ -62,6 +62,12 @@ class User implements IUser{
         const doc = await collection.findOne({ _id : new ObjectId(id)})
         return doc ? new User({ _id : doc._id, ...doc}) : null
     }
+
+    static async findAll():Promise<any>{
+        const collection: any = await userCollection()
+        const response = await collection.find().toArray() // makes cursor return all doc
+        return response ? response : null
+    }
     // update
     static async update(id : string, data : Partial<IUser>): Promise<boolean>{
         

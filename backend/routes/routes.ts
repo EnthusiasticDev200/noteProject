@@ -1,6 +1,10 @@
 import express from "express";
 
-import { deleteUser, getAllUser, getUser, registerUser, updateProfile } from "../controllers/users.js";
+import { 
+    deleteUser, getAllUser, getUser, loginUser, 
+    registerUser, updateProfile 
+} from "../controllers/users.js";
+import { authenticateJWT } from "../../middleware/auth.js";
 
 
 
@@ -9,6 +13,8 @@ const router = express.Router()
 
 
 router.post("/user/create", registerUser)
+
+router.post("/user/login", loginUser)
 
 router.get("/user/:id", getUser)
 

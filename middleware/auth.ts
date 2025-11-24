@@ -41,13 +41,22 @@ const authenticateJWT = ( req : Request, res : Response, next : NextFunction) =>
 
 const requireSuperUser = ( req: Request, res :Response, next : NextFunction )=>{
     const role = req.role
-    if( role !== "admin"){
+    if( role !== "super admin"){
         return res.status(403).json({
             message : "Unauthorized! Super user only"
         })
     }
     next()
 }
+const customerOnly = ( req: Request, res: Response, next: NextFunction)=>{
+    const role = req.role
+    if ( role !== 'customer'){
+        return res.status(403).json({
+            message : "Strictly for customers"
+        })
+    }
+    next()
+}
 
 
-export { authenticateJWT, requireSuperUser }
+export { authenticateJWT, requireSuperUser, customerOnly }

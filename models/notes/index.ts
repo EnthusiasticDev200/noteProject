@@ -34,10 +34,6 @@ export class Note implements INote{
                 payload._id = payload._id ?? new ObjectId()
                 payload.createdAt = payload.createdAt ?? new Date()
 
-                console.log("Using userId (from JWT):", payload.userId);
-                console.log("Creating note with _id:", payload._id);
-
-
                 const note = new Note(payload)
 
                 console.log("payload.userld from Note method", payload.userId)
@@ -67,7 +63,6 @@ export class Note implements INote{
                 
         const doc = await collection.findOne({ userId : new ObjectId(userId)})
 
-        console.log("doc from getNote", doc)
 
         return doc ? new Note({ userId : doc.userId, ...doc}) : null
     }

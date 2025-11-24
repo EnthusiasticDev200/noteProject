@@ -52,14 +52,10 @@ export const getAllUser = async( req: Request, res: Response )=>{
 
 export const getUser = async( req: Request, res: Response )=>{
     try{
-        const { id } = req.params
-        // validate id is present
-        if (!id){
-            return res.status(404).json({
-                message : "id not provided"
-            })
-        }
-        const user = await User.findById(id)
+        const userId = req.userld!
+        
+        const user = await User.findById(userId)
+
         return res.status(200).json(user)
     }catch(error:any){
         console.log("Error retrieving user")
@@ -123,25 +119,22 @@ export const loginUser = async ( req: Request, res : Response) =>{
 
         const user = await User.findByEmail(email)
 
-
         if ( !user ){
             return res.status(404).json({ message: 'user not found' })
         }
 
-        if (user.name !== name && user.email !== email){
+        if (user.name !== name || user.email !== email){
             return res.status(401).json({
-                message : "ops!!"
+                message : "ops! mismatch"
             })
         }
-
         // create payload
         const payload = {
-            userId : user.id,
+            userId : user._id,
             name : user.name,
             email : user.email,
             role : user.role
         }
-       
         //create jwt
         const userToken = accessToken(payload)
 

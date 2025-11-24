@@ -2,9 +2,9 @@ import { ObjectId } from "mongodb";
 
 
 export interface INote{
-    id : ObjectId
-    userId : ObjectId
+    _id? : ObjectId
+    userId? : ObjectId
     content : string
-    createdAt : Date
+    createdAt? : Date
     updateAt? : Date
 }

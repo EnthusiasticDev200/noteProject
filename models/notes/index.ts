@@ -3,42 +3,82 @@ import { INote } from "./type.js";
 import { noteCollection } from "../../backend/config/database.js";
 
 
-class Note implements INote{
-    id :  ObjectId
-    userId: ObjectId;
+export class Note implements INote{
+    _id? :  ObjectId
+    userId? : ObjectId;
     content: string;
-    createdAt: Date;
+    createdAt?: Date;
     updateAt?: Date;
 
-    constructor(payload:any){
-        this.id = payload.id ?? new ObjectId
-        this.userId = payload.userId
+    constructor(payload:INote){
+        this._id = payload._id ?? new ObjectId()
+        this.userId = payload.userId ?? new ObjectId()
         this.content = payload.content 
-        this.createdAt = payload.createAt ?? new Date()
+        this.createdAt = payload.createdAt ?? new Date()
         this.updateAt = payload.updateAt ?? new Date()
     }
 
     //create
-    static async create(payload:INote):Promise<Note | null >{
-        const collection:any = await noteCollection()
-
-        const note = new Note(payload)
-        let createNote
+    static async create(userId:string, payload:INote):Promise<Note | null >{
         try{
-                createNote = await collection.insertOne({
-                _id : note.id,
-                userId : note.userId,
-                content : note.content,
-                creatdAt : note.createdAt
-            })
+                const collection:any = await noteCollection()
+
+                const isValidId = ObjectId.isValid(userId)
+                if ( !isValidId ) throw new Error ("wants a valid id")
+
+                
+                
+                // Ensure all fields exist
+                payload.userId = new ObjectId(userId) // from jwt
+
+                payload._id = payload._id ?? new ObjectId()
+                payload.createdAt = payload.createdAt ?? new Date()
+
+                console.log("Using userId (from JWT):", payload.userId);
+                console.log("Creating note with _id:", payload._id);
+
+
+                const note = new Note(payload)
+
+                console.log("payload.userld from Note method", payload.userId)
+                    
+                const createNote = await collection.insertOne({
+                    _id : note._id,
+                    userId : note.userId,
+                    content : note.content,
+                    creatdAt : note.createdAt
+                })
+                return createNote
         }catch(error:any){
-            console.log("error insertng record", error)
-            throw new Error("error insertng record")
+                console.log("error insertng record", error)
+                throw new Error("error insertng record")
         }
-        
-        return createNote
+            
+       
+    }
+    
+    // get 
+    static async find(userId: string): Promise<Note | null>{
+
+        const isValidId = ObjectId.isValid(userId)        
+        if ( !isValidId ) throw new Error("Invalid id")
+                
+        const collection: any = await noteCollection()
+                
+        const doc = await collection.findOne({ userId : new ObjectId(userId)})
+
+        console.log("doc from getNote", doc)
+
+        return doc ? new Note({ userId : doc.userId, ...doc}) : null
     }
 
+    static async findAll():Promise<Note | null>{
+        const collection:any = await noteCollection()
+
+        const doc = await collection.find().toArray()
+        return doc ? doc : null
+        
+    }
     static async update(id:string, data:Partial<INote>): Promise< Note| null>{
         try{
             const isValidId = ObjectId.isValid(id)

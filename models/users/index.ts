@@ -5,7 +5,7 @@ import type { IUser } from './type.js';
 
 
 class User implements IUser{
-    id? :  ObjectId
+    _id :  ObjectId
     name : string
     email : string
     role : string
@@ -13,7 +13,7 @@ class User implements IUser{
     updatedAt?: Date;
 
     constructor(payload:IUser){
-        this.id = payload.id ?? new ObjectId()
+        this._id = payload._id 
         this.name = payload.name
         this.email = payload.email
         this.role = payload.role
@@ -28,7 +28,7 @@ class User implements IUser{
 
         const user = new User(payload)
         const createUSer = await collection.insertOne({
-            _id : user.id,
+            _id : user._id,
             name : user.name,
             email : user.email,
             role : user.role,
@@ -48,6 +48,8 @@ class User implements IUser{
         const collection:any = await userCollection() 
 
         const  doc = await collection.findOne({email:value}) 
+        console.log("doc from find user", doc)
+
         return doc ? new User({_id : doc._id, ...doc }) : null
         
     }

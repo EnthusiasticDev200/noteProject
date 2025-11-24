@@ -86,6 +86,10 @@ class User implements IUser{
 
     //delete
     static async delete(id:string): Promise<boolean>{
+        
+        const isValidId = ObjectId.isValid(id)
+        if( !isValidId) throw new Error("invalid id")
+        
         const collection:any = await userCollection()
 
         const result = await collection.deleteOne(

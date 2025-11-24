@@ -5,26 +5,37 @@ import {
     logoutUser, 
     registerUser, updateProfile 
 } from "../controllers/users.js";
-import { authenticateJWT, requireSuperUser } from "../../middleware/auth.js";
+
+import { authenticateJWT, customerOnly, requireSuperUser } from "../../middleware/auth.js";
+
+import { createNote, getAllNotes, getNote } from "../controllers/notes.js";
 
 
 
 const router = express.Router()
 
 
-
+// user routes
 router.post("/user/create", registerUser)
 
 router.post("/user/login", loginUser)
 
 router.post("/user/logout", authenticateJWT, logoutUser)
 
-router.get("/user/:id", authenticateJWT, getUser)
+router.get("/user", authenticateJWT, getUser)
 
 router.get("/users/", authenticateJWT, requireSuperUser, getAllUser)
 
 router.put("/user/:id/update", authenticateJWT, updateProfile)
 
 router.delete("/user/:id", authenticateJWT, deleteUser)
+
+// note routes
+
+router.post("/note/create", authenticateJWT, customerOnly, createNote)
+
+router.get("/note", authenticateJWT, customerOnly, getNote)
+
+router.get("/notes", authenticateJWT, requireSuperUser, getAllNotes)
 
 export default router

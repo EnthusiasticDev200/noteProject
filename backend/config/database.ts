@@ -33,13 +33,13 @@ export const userCollection = async() =>{
 }
 
 
-export const notesCollection = async() =>{
+export const noteCollection = async() =>{
     const database = await connectDb()
     return database.collection("notes") // create note's collection
 }
 
 
-export const ordersCollection = async() =>{
+export const orderCollection = async() =>{
     const database = await connectDb()
     return database.collection("orders") // create orders's collection
     

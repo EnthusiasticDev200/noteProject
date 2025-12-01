@@ -61,10 +61,13 @@ export class Note implements INote{
                 
         const collection: any = await noteCollection()
                 
-        const doc = await collection.findOne({ userId : new ObjectId(userId)})
+        const doc = await collection.findOne(
+            { userId : new ObjectId(userId)},
+            //projection : exclude : 0, include : 1. NB: 1 & 0 cnt coexist
+            { updatedAt : 0 } // removed updatedAt field but include the rest
+        )
 
-
-        return doc ? new Note({ userId : doc.userId, ...doc}) : null
+        return doc ? doc : null
     }
 
     static async findAll():Promise<Note | null>{

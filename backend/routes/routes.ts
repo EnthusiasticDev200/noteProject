@@ -8,7 +8,7 @@ import {
 
 import { authenticateJWT, customerOnly, requireSuperUser } from "../../middleware/auth.js";
 
-import { createNote, getAllNotes, getNote } from "../controllers/notes.js";
+import { createNote, deleteNote, getAllNotes, getNote } from "../controllers/notes.js";
 
 
 
@@ -37,5 +37,8 @@ router.post("/note/create", authenticateJWT, customerOnly, createNote)
 router.get("/note", authenticateJWT, customerOnly, getNote)
 
 router.get("/notes", authenticateJWT, requireSuperUser, getAllNotes)
+
+router.get("/sample", authenticateJWT, deleteNote)
+
 
 export default router

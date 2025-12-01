@@ -45,3 +45,13 @@ export const getAllNotes = async ( req: Request, res: Response)=>{
 
     return res.status(200).json(notes)
 }
+
+//delete
+
+export const deleteNote = async( req: Request, res: Response)=>{
+    const userId = req.userld!
+
+    const myNote = await getNote(req, res)
+    console.log("myNote", myNote)
+    return res.status(200).json(myNote)
+}
